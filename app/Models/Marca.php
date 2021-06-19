@@ -13,12 +13,6 @@ class Marca extends Model
 
     public function rules()
     {
-        /*
-            A validacao do tipo Unique contem 3 parametros
-            1. A tabela
-            2. Nome da coluna que sera pesquisado, por default fica implicito a coluna input 
-            3. Id do registro que sera desconsiderado na pesquisa
-        */
         return [
             'nome' => 'required|unique:marcas,nome,'.$this->id.'|min:3',
             'imagem' => 'required|file|mimes:png'
