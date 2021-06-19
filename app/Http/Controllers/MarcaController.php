@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 
 class MarcaController extends Controller
 {
-    public function __construct(Marca $marca) {
+    public function __construct(Marca $marca) 
+    {
         $this->marca = $marca;
     }
     /**
@@ -94,20 +95,11 @@ class MarcaController extends Controller
         $imagem = $request->file('imagem');
         $imagem_urn = $imagem->store('imagens', 'public');
 
-        //dd($request->nome); //null com metodo patch e da erro
-        //para resolver: preencher o objeto $marca com os dados do objeto
         $marca->fill($request->all()); 
         $marca->imagem = $imagem_urn;
-        //dd($marca->getAttributtes());
-        //Save: vai fazer um update dos atributos do banco caso seja id esteja preenchido, caso contrário cria um novo
+        
         $marca->save();
 
-        /*
-        $marca->update([
-            'nome' => $request->nome,
-            'imagem' => $imagem_urn
-        ]);
-        */
         return response()->json($marca, 200);
     }
 

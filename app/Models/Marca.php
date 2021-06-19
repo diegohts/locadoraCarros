@@ -31,7 +31,6 @@ class Marca extends Model
 
     public function modelos()
     {
-        //Relacionamento 1:N - UMA marca POSSUI MUITOS modelos
         return $this->hasMany('App\Models\Modelo');
     }
 }

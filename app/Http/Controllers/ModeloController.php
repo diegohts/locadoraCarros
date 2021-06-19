@@ -8,35 +8,30 @@ use Illuminate\Http\Request;
 
 class ModeloController extends Controller
 {
-    public function __construct(Modelo $modelo) {
+    public function __construct(Modelo $modelo) 
+    {
         $this->modelo = $modelo;
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
         $modelos = array();
 
-        //has verifica se existe o atributos
         if($request->has('atributos')){
             $atributos = $request->atributos;
             $modelos = $this->modelo->selectRaw($atributos)->with('marca')->get();
-            // dd($request->atributos);
-            //Select: id,nome,imagem
-            //SelectRaw: 'id','nome','imagem'
+
         } else {
             $modelos = $this->modelo->with('marca')->get();
         }
-        // $this->modelo->with('marca')->get()
+        
         return response()->json($modelos, 200);
-        // return response()->json($this->modelo->with('marca')->get(), 200);
-        //return response()->json($this->modelo->all(), 200);
-        //all() -> criando um obj de consulta + get() = collection // da erro
-        //get() -> modificar a consulta -> collection
     }
 
     /**
@@ -121,17 +116,7 @@ class ModeloController extends Controller
         $modelo->imagem = $imagem_urn;
 
         $modelo->save();
-        /*
-        $modelo->update([
-            'marca_id' => $request->marca_id,
-            'nome' => $request->nome,
-            'imagem' => $imagem_urn,
-            'numero_portas' => $request->numero_portas,
-            'lugares' => $request->lugares,
-            'air_bag' => $request->air_bag,
-            'abs' => $request->abs
-        ]);
-        */
+
         return response()->json($modelo, 200);
     }
 
