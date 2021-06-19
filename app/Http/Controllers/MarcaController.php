@@ -18,8 +18,7 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        $marcas = $this->marca->all();
-        return response()->json($marcas, 200);
+        return response()->json($this->marca->with('modelos')->get(), 200);
     }
 
     /**
@@ -46,12 +45,12 @@ class MarcaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Integer
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $marca = $this->marca->find($id);
+        $marca = $this->marca->with('modelos')->find($id);
         if($marca === null) {
             return response()->json(['erro' => 'Recurso pesquisado não existe'], 404) ;
         } 
@@ -63,7 +62,7 @@ class MarcaController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Integer
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -71,8 +70,7 @@ class MarcaController extends Controller
         $marca = $this->marca->find($id);
 
         if($marca === null) {
-            return response()->json(['erro' => 'Impossível realizar a atualização. 
-            O recurso solicitado não existe'], 404);
+            return response()->json(['erro' => 'Impossível realizar a atualização. O recurso solicitado não existe'], 404);
         }
 
         if($request->method() === 'PATCH') {
@@ -96,17 +94,27 @@ class MarcaController extends Controller
         $imagem = $request->file('imagem');
         $imagem_urn = $imagem->store('imagens', 'public');
 
+        //dd($request->nome); //null com metodo patch e da erro
+        //para resolver: preencher o objeto $marca com os dados do objeto
+        $marca->fill($request->all()); 
+        $marca->imagem = $imagem_urn;
+        //dd($marca->getAttributtes());
+        //Save: vai fazer um update dos atributos do banco caso seja id esteja preenchido, caso contrário cria um novo
+        $marca->save();
+
+        /*
         $marca->update([
             'nome' => $request->nome,
             'imagem' => $imagem_urn
         ]);
+        */
         return response()->json($marca, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Integer
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
