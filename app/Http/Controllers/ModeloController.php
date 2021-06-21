@@ -39,6 +39,7 @@ class ModeloController extends Controller
         if($request->has('atributos')){
             $modeloRepository->selectAtributos($request->atributos);
         }
+        
         return response()->json($modeloRepository->getResultado(), 200);
     }
 
