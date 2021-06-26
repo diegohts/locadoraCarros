@@ -9,7 +9,7 @@ use App\Repositories\ModeloRepository;
 
 class ModeloController extends Controller
 {
-    public function __construct(Modelo $modelo) 
+    public function __construct(Modelo $modelo)
     {
         $this->modelo = $modelo;
     }
@@ -24,22 +24,22 @@ class ModeloController extends Controller
     {
         $modeloRepository = new ModeloRepository($this->modelo);
 
-        if($request->has('atributos_marca')){
-            $atributos_marca = 'marca:id,'.$request->atributos_marca;
+        if ($request->has('atributos_marca')) {
+            $atributos_marca = 'marca:id,' . $request->atributos_marca;
 
             $modeloRepository->selectAtributosRegistrosRelacionados($atributos_marca);
         } else {
             $modeloRepository->selectAtributosRegistrosRelacionados('marca');
         }
 
-        if($request->has('filtro')){
+        if ($request->has('filtro')) {
             $modeloRepository->filtro($request->filtro);
         }
 
-        if($request->has('atributos')){
+        if ($request->has('atributos')) {
             $modeloRepository->selectAtributos($request->atributos);
         }
-        
+
         return response()->json($modeloRepository->getResultado(), 200);
     }
 
@@ -78,9 +78,9 @@ class ModeloController extends Controller
     public function show($id)
     {
         $modelo = $this->modelo->with('marca')->find($id);
-        if($modelo === null) {
-            return response()->json(['erro' => 'Recurso pesquisado não existe'], 404) ;
-        } 
+        if ($modelo === null) {
+            return response()->json(['erro' => 'Recurso pesquisado não existe'], 404);
+        }
 
         return response()->json($modelo, 200);
     }
@@ -96,32 +96,31 @@ class ModeloController extends Controller
     {
         $modelo = $this->modelo->find($id);
 
-        if($modelo === null) {
+        if ($modelo === null) {
             return response()->json(['erro' => 'Impossível realizar a atualização. O recurso solicitado não existe'], 404);
         }
 
-        if($request->method() === 'PATCH') {
+        if ($request->method() === 'PATCH') {
             $regrasDinamicas = array();
 
-            foreach($modelo->rules() as $input => $regra) {
-                if(array_key_exists($input, $request->all())) {
+            foreach ($modelo->rules() as $input => $regra) {
+                if (array_key_exists($input, $request->all())) {
                     $regrasDinamicas[$input] = $regra;
                 }
             }
             $request->validate($regrasDinamicas, $modelo->feedback());
-
         } else {
             $request->validate($modelo->rules(), $modelo->feedback());
         }
 
-        if($request->file('imagem')){
+        if ($request->file('imagem')) {
             Storage::disk('public')->delete($modelo->imagem);
         }
 
         $imagem = $request->file('imagem');
         $imagem_urn = $imagem->store('imagens/modelos', 'public');
 
-        $modelo->fill($request->all()); 
+        $modelo->fill($request->all());
         $modelo->imagem = $imagem_urn;
 
         $modelo->save();
@@ -139,13 +138,13 @@ class ModeloController extends Controller
     {
         $modelo = $this->modelo->find($id);
 
-        if($modelo === null) {
+        if ($modelo === null) {
             return response()->json(['erro' => 'Impossível realizar a exclusão. O recurso solicitado não existe'], 404);
         }
 
-        Storage::disk('public')->delete($modelo->imagem);        
+        Storage::disk('public')->delete($modelo->imagem);
 
         $modelo->delete();
-        return response()->json(['msg' => 'A marca foi removida com sucesso!'], 200);
+        return response()->json(['msg' => 'O modelo foi removido com sucesso!'], 200);
     }
 }
